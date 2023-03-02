@@ -1,0 +1,12 @@
+name: Feature
+description: Feature
+
+assignees:
+  - koralle
+body:
+  - type: input
+    id: goal
+    attributes:
+      label: Goal
+      description: Issueのゴールを書く
+      placeholder: 〇〇機能の開発が完了していること。
