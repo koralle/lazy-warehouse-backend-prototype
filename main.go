@@ -6,27 +6,24 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/koralle/lazy-warehouse-backend-prototype/config"
-	"github.com/koralle/lazy-warehouse-backend-prototype/graph"
+	"github.com/koralle/lazy-warehouse-backend-prototype/mux"
 )
 
-const defaultPort = "8080"
-
 func run() error {
-	cfg, err := config.New()
+	config, err := config.New()
+	if err != nil {
+		return err
+	}
+	mux, cleanup, err := mux.NewMux()
+
 	if err != nil {
 		return err
 	}
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	defer cleanup()
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
-
-	log.Printf("connect to http://localhost:%d/ for GraphQL playground", cfg.Port)
-	log.Fatal(http.ListenAndServe(":"+fmt.Sprintf("%d", cfg.Port), nil))
+	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), mux)
 
 	return nil
 }
