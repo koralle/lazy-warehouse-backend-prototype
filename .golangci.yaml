@@ -1,0 +1,24 @@
+run:
+  modules-download-mode: vendor
+
+line-settings:
+  govet:
+    check-shutdowing: false
+  gocyclo:
+    min-complexity: 10
+  misspell:
+    local: US
+
+linters:
+  disable-all: true
+  enable:
+    - goimports
+    - errcheck
+    - gocognit
+    - gocritic
+    - gocyclo
+    - gofmt
+    - govet
+    - misspell
+    - staticcheck
+    - whitespace

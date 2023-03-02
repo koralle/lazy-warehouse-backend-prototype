@@ -1,0 +1,39 @@
+version: '3.9'
+  
+services:
+  app:
+    image: lazy_warehouse_backend_prototype
+    build:
+      context: .
+      dockerfile: ./dockerfiles/app/Dockerfile
+      args:
+        - target=dev
+    environment:
+      TODO_ENV: dev
+      PORT: 8080
+    volumes:
+      - .:/app
+    ports:
+      - "18000:8080"
+
+  postgres:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: ./dockerfiles/postgresql/Dockerfile
+      args:
+        - DB_LANG=ja_JP
+    
+    ports:
+      - 5432:5432
+
+    environment:
+      - POSTGRES_USER=dev_root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=postgres
+      - TZ=Asia/tokyo
+    restart: always
+
+    volumes:
+      - ./dockerfiles/postgresql/data:/var/lib/postgresql/data
+      - ./dockerfiles/postgresql/script:/docker-entrypoint-initdb.d
