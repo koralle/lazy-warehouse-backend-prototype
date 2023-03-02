@@ -1,46 +1,38 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"net"
+	"net/http"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/koralle/lazy-warehouse-backend-prototype/config"
-	"github.com/koralle/lazy-warehouse-backend-prototype/mux"
-	"github.com/koralle/lazy-warehouse-backend-prototype/server"
+	"github.com/koralle/lazy-warehouse-backend-prototype/graph"
 )
 
-func run(ctx context.Context) error {
+const defaultPort = "8080"
+
+func run() error {
 	cfg, err := config.New()
 	if err != nil {
 		return err
 	}
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
-	if err != nil {
-		log.Fatalf("failed to listen port %d: %v", cfg.Port, err)
-	}
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
-	url := fmt.Sprintf("http://%s", l.Addr().String())
-	log.Printf("start with: %v", url)
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
 
-	mux, cleanup, err := mux.NewMux(ctx, cfg)
+	log.Printf("connect to http://localhost:%d/ for GraphQL playground", cfg.Port)
+	log.Fatal(http.ListenAndServe(":"+fmt.Sprintf("%d", cfg.Port), nil))
 
-	if err != nil {
-		return err
-	}
-
-	defer cleanup()
-
-	s := server.NewServer(l, mux)
-
-	return s.Run(ctx)
+	return nil
 }
 
 func main() {
-	if err := run(context.Background()); err != nil {
+	if err := run(); err != nil {
 		log.Printf("failed to terminate server: %v", err)
 		os.Exit(1)
 	}
