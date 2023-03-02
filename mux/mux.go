@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi/v5"
 
@@ -22,8 +24,13 @@ func NewMux(config *config.Config) (http.Handler, func(), error) {
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.POST{})
+
 	mux.Post("/query", srv.ServeHTTP)
+
 	if config.Env == "dev" {
+		srv.Use(extension.Introspection{})
 		mux.Get("/", playground.Handler("GraphQL playground", "/query"))
 	}
 
