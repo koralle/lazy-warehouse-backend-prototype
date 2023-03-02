@@ -13,20 +13,20 @@ import (
 )
 
 func run(ctx context.Context) error {
-	cfg, err := config.New()
+	config, err := config.New()
 	if err != nil {
 		return err
 	}
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", config.Port))
 	if err != nil {
-		log.Fatalf("failed to listen port %d: %v", cfg.Port, err)
+		log.Fatalf("failed to listen port %d: %v", config.Port, err)
 	}
 
 	url := fmt.Sprintf("http://%s", l.Addr().String())
 	log.Printf("start with: %v", url)
 
-	mux, cleanup, err := mux.NewMux(ctx, cfg)
+	mux, cleanup, err := mux.NewMux(config)
 
 	if err != nil {
 		return err
@@ -37,6 +37,7 @@ func run(ctx context.Context) error {
 	s := server.NewServer(l, mux)
 
 	return s.Run(ctx)
+
 }
 
 func main() {

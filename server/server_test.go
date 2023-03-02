@@ -13,6 +13,7 @@ import (
 )
 
 func TestServer_Run(t *testing.T) {
+
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatalf("failed to listen port %v", err)
@@ -42,7 +43,7 @@ func TestServer_Run(t *testing.T) {
 		t.Errorf("failed to get: %+v", err)
 	}
 
-	// defer rsp.Body.Close()
+	defer rsp.Body.Close()
 
 	got, err := io.ReadAll(rsp.Body)
 
