@@ -26,7 +26,7 @@ func run(ctx context.Context) error {
 	url := fmt.Sprintf("http://%s", l.Addr().String())
 	log.Printf("start with: %v", url)
 
-	mux, cleanup, err := mux.NewMux()
+	mux, cleanup, err := mux.NewMux(config)
 
 	if err != nil {
 		return err
