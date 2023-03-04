@@ -5,8 +5,8 @@ import (
 )
 
 type Config struct {
-	Env  string `env:"TODO_ENV" envDefault:"dev"`
-	Port int    `env:"PORT" envDefault:"80"`
+	Env  string `env:"ENV" envDefault:"dev"`
+	Port int    `env:"PORT" envDefault:"8080"`
 }
 
 func New() (*Config, error) {
