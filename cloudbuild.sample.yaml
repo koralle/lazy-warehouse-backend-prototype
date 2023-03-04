@@ -1,0 +1,45 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t',
+      'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_NAME}/${_DOCKER_IMAGE_NAME}:${_TAG}',
+      '.',
+      '-f',
+      './dockerfiles/app/Dockerfile',
+      '--platform',
+      'linux/amd64',
+      '--target',
+      'deploy'
+    ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_NAME}/${_DOCKER_IMAGE_NAME}:${_TAG}'
+    ]
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'run',
+      'deploy',
+      '${_CLOUD_RUN_SERVICE_NAME}',
+      '--image=asia-northeast1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_NAME}/${_DOCKER_IMAGE_NAME}:${_TAG}',
+      '--region',
+      'asia-northeast1',
+      '--platform',
+      'managed',
+      '--max-instances=1'
+    ]
+    env:
+      - 'ENV=dev'
+
+images:
+  - asia-northeast1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_NAME}/${_DOCKER_IMAGE_NAME}:${_TAG}
+
+substitutions:
+  _ARTIFACT_REGISTRY_NAME: 'lazy-warehouse-docker-repository-sample'
+  _CLOUD_RUN_SERVICE_NAME: 'lazy-warehouse-sample'
+  _DOCKER_IMAGE_NAME: 'lazy-warehouse'
+  _TAG: 'v0.1.0'
+

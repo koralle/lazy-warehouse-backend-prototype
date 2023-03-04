@@ -26,3 +26,5 @@ ps:
 test:
     go test -race -shuffle=on ./...
 
+cloudbuild-sample:
+    gcloud builds submit --region global --config cloudbuild.sample.yaml
