@@ -18,7 +18,7 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", config.Port))
+	l, err := net.Listen("tcp4", fmt.Sprintf("0.0.0.0:%d", config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen port %d: %v", config.Port, err)
 	}
