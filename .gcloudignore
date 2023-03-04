@@ -1,0 +1,11 @@
+# Docker for PostgreSQL
+./dockerfiles/postgresql/*
+
+# GitHub
+./.github/*
+
+# Build Binary on Local Machine
+lazy-warehouse-backend-prototype
+
+# Terraform
+terraform/*
